@@ -58,6 +58,13 @@ Now Run:
 Congratulations You've Successfully cloned this app!
 
 Now Make Changes and if you want add new features and make a Pull Request. 
+
+## Features : 
+
+1. View All Events and add to your calendar:
+2. Signup and Post your own events
+3. Edit and delete your events ( in development )
+4. Filter to events starting current date so you dont see old events
 	
 	
 	
