@@ -247,6 +247,66 @@ app.post("/add-event", userauth, eventcheck, (req, res) => {
   }
 });
 
+//                      UPDATE EVENT DETAILS ( ID , USER )
+
+app.post("/update-event", userauth, async (req, res) => {
+  let id = req.headers.id;
+  let username = req.usernameFromAuth;
+  let updatedDetails = JSON.parse(req.headers.updateddetails);
+
+  if (!id) {
+    res.json({
+      message: "Please Give ID of Event You want to edit",
+    });
+    return;
+  }
+  if (!updatedDetails) {
+    res.json({
+      message: "Please Give Updated Details as an Object",
+    });
+    return;
+  }
+
+  console.log(updatedDetails);
+
+  if (updatedDetails.startTime >= updatedDetails.endTime) {
+    res.json({
+      message: "End Time Cant be earlier than start Time Check Your Time!",
+    });
+    return;
+  }
+
+  const userEvents = await Event.findOne({ _id: id });
+
+  if (userEvents.user == username) {
+    try {
+      const updatedEvent = await Event.findByIdAndUpdate(id, updatedDetails, {
+        new: true,
+      });
+      if (!updatedEvent) {
+        throw new Error("Sorry Couldnt find Event By that ID");
+      } else {
+        console.log(updatedEvent);
+        res.json({
+          message: "Updated The Event Successfully",
+        });
+      }
+    } catch (error) {
+      res.json({
+        message: "Sorry We Got Some Error" + error.message,
+      });
+      return;
+    }
+  } else {
+    res.json({
+      message: "Please Only try to edit Your Own Events",
+    });
+    return;
+  }
+});
+
+//      GETTING ALL EVENTS
+
 app.get("/get-events", async (req, res) => {
   const Events = await Event.find();
   res.send(Events);
