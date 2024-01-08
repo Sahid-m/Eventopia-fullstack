@@ -325,6 +325,49 @@ app.get("/get-event-user", userauth, async (req, res) => {
   res.send(Events);
 });
 
+app.delete("/delete", userauth, async (req, res) => {
+  let id = req.headers.id;
+  let username = req.usernameFromAuth;
+
+  if (!id) {
+    res.json({
+      message: "Please Give ID of Event You want to Delete",
+    });
+    return;
+  }
+
+  const userEvents = await Event.findOne({ _id: id });
+
+  if (userEvents.user == username) {
+    try {
+      const result = await Event.deleteOne({ _id: id });
+
+      if (result.deletedCount === 1) {
+        res.json({
+          message: "Event deleted successfully",
+        });
+        return;
+      } else {
+        res.json({
+          message: "Event Not Found",
+        });
+        return;
+      }
+    } catch (error) {
+      res.json({
+        message: "We Got Some Error",
+      });
+      console.log(error.message);
+      return;
+    }
+  } else {
+    res.json({
+      message: "Please Only Delete Your Own Event! -_- !",
+    });
+    return;
+  }
+});
+
 app.listen(port, "0.0.0.0", () => {
   console.log(`Example app listening on port ${port}`);
 });
