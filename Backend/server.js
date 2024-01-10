@@ -58,6 +58,16 @@ app.post("/signup", async (req, res) => {
     return;
   }
 
+  if (
+    typeof uname !== "string" ||
+    typeof password !== "string" ||
+    typeof email !== "string" ||
+    typeof name !== "string"
+  ) {
+    res.json({ message: "Please Give Details as String" });
+    return;
+  }
+
   const UserAlrd = await Users.findOne({ username: uname });
   if (UserAlrd) {
     res
@@ -96,6 +106,12 @@ app.post("/login", async (req, res) => {
   if (!(uname && password)) {
     res.json({ message: "Please Give required Information" });
     return;
+  }
+
+  if (typeof uname !== "string" || typeof password !== "string") {
+    res.json({
+      message: "Please Send Username and Password as String",
+    });
   }
 
   const User = await Users.findOne({ username: uname });
@@ -185,6 +201,8 @@ const eventcheck = (req, res, next) => {
     startTime = req.body.startTime,
     endTime = req.body.endTime;
 
+  console.log(req.body);
+
   if (
     !(
       img &&
@@ -224,6 +242,21 @@ app.post("/add-event", userauth, eventcheck, (req, res) => {
     endTime = req.body.endTime,
     username = req.usernameFromAuth;
 
+  if (
+    typeof img !== "string" ||
+    typeof heading !== "string" ||
+    typeof description !== "string" ||
+    typeof place !== "string" ||
+    typeof startDate !== "string" ||
+    typeof startTime !== "string" ||
+    typeof endTime !== "string"
+  ) {
+    res.json({
+      message: "Please Only send desired things as text",
+    });
+    return;
+  }
+
   const event = new Event({
     img: img,
     heading: heading,
@@ -254,13 +287,13 @@ app.post("/update-event", userauth, async (req, res) => {
   let username = req.usernameFromAuth;
   let updatedDetails = JSON.parse(req.headers.updateddetails);
 
-  if (!id) {
+  if (!id || typeof id !== "string") {
     res.json({
       message: "Please Give ID of Event You want to edit",
     });
     return;
   }
-  if (!updatedDetails) {
+  if (!updatedDetails || typeof updatedDetails !== "object") {
     res.json({
       message: "Please Give Updated Details as an Object",
     });
@@ -332,6 +365,13 @@ app.delete("/delete", userauth, async (req, res) => {
   if (!id) {
     res.json({
       message: "Please Give ID of Event You want to Delete",
+    });
+    return;
+  }
+
+  if (typeof id !== "string") {
+    res.json({
+      message: "Please Only Send ID as string",
     });
     return;
   }
